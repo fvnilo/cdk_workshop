@@ -1,6 +1,6 @@
 from aws_cdk import Stack
 from constructs import Construct
-from aws_cdk.aws_codecommit import Repository
+from aws_cdk import aws_codeconnections as codeconnections
 from aws_cdk.pipelines import (
     CodePipeline,
     CodePipelineSource,
@@ -25,13 +25,19 @@ class PipelineStack(Stack):
 
         self.context = self.node.try_get_context(environment_type)
 
-        repository = Repository.from_repository_arn(
-            self,
-            "CodeCommitRepo",
-            f'arn:aws:codecommit:{self.region}:{self.account}:{self.context["repository"]["name"]}'
+        cfn_connection = codeconnections.CfnConnection(self, "MyCfnConnection",
+            connection_name="CdkWorkshop",
+
+            # the properties below are optional
+            provider_type="GitHub",
+            tags=[]
         )
 
-        self.source_stage = CodePipelineSource.code_commit(repository,self.context["repository"]["branch"])
+        self.source_stage = CodePipelineSource.connection(
+            self.context["repository"]["name"],
+            self.context["repository"]["branch"],
+            connection_arn=cfn_connection.attr_connection_arn
+        )
 
         pipeline = CodePipeline(self, "Pipeline",
             pipeline_name = self.context["pipeline"]["name"],

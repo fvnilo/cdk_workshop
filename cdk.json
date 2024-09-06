@@ -75,7 +75,7 @@
         "stage": "qa"
       },
       "repository": {
-        "name": "cdk_workshop",
+        "name": "fvnilo/cdk_workshop",
         "branch": "feature/pipeline"
       },
       "pipeline": {
